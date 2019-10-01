@@ -42,7 +42,7 @@ def init_outward_socket():
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	sock.bind((OUTWARD_FACING_IP, OUTWARD_FACING_PORT))
 	sock.listen(1)
-	print(f"Now listening on {OUTWARD_FACING_IP}:{OUTWARD_FACING_PORT}")
+	print(f"Now listening on OUTWARD {OUTWARD_FACING_IP}:{OUTWARD_FACING_PORT}")
 	connection, client_address = sock.accept()
 	
 	forward_packets(connection, INWARD_FACING_IFACE)
@@ -53,7 +53,7 @@ def init_outward_socket():
 Initialize the DCnet-facing socket
 """
 def init_inward_socket():
-	print(f"Now listening on {INWARD_FACING_IP}:{INWARD_FACING_PORT}")
+	print(f"Now listening on INWARD {INWARD_FACING_IP}:{INWARD_FACING_PORT}")
 	fil = f"dst port {INWARD_FACING_PORT}"
 	sniff(iface=INWARD_FACING_IFACE, filter=fil, prn=lambda x: x.show())
 
