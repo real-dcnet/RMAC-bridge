@@ -24,8 +24,8 @@ RESET = "\033[0m"
 """
 Sends an RMAC packet out on the given interface
 """
-def srp_packet(pickled_packet, iface):
-	packet = Ether(pk.loads(pickled_packet))
+def srp_packet(packet_bytes, iface):
+	packet = Ether(packet_bytes)
 	# Check not keepalive, would print loop infinitely without this
 	if not packet[Ether].type == 0x9000:
 		print(RED + "PACKET RECIEVED, FORWARDING TO DCNET" + RESET)
@@ -37,12 +37,12 @@ def srp_packet(pickled_packet, iface):
 Accept packets from connection c until "\r\n" received
 """
 def forward_packets(c, iface):
-	incoming_packet = lambda: pk.dumps(c.recv(4096))
+	incoming_packet = lambda: bytes(c.recv(4096))
 	
-	pickled_pkt = incoming_packet()
-	while pickled_pkt:
-		srp_packet(pickled_pkt, iface)
-		pickled_pkt = incoming_packet()
+	bytes_packet = incoming_packet()
+	while bytes_packet:
+		srp_packet(bytes_packet, iface)
+		bytes_packet = incoming_packet()
 
 """
 Initialize the globally-facing socket
@@ -66,8 +66,8 @@ Initialize the DCnet-facing socket
 def send_over_bridge(sock, pkt):
 	print("Sending packet here")
 	pkt.show()
-	pickled_packet = pk.dumps(pkt)
-	sock.send(pickled_packet)
+	packet_bytes = bytes(pkt)
+	sock.send(packet_bytes)
 
 def init_inward_socket():
 	print("Now listening on INWARD", INWARD_FACING_IP, ":", INWARD_FACING_PORT)
