@@ -28,7 +28,7 @@ sudo pip install -r requirements.txt
 ```
 
 To configure RMAC Bridge for your environment, change the following settings at the
-top of `incoming.py`:
+top of `src/RMACBridge/globals.py`:
 
 ```
 OUTWARD_FACING_IFACE = "eth0" # Network interface connected to Internet
@@ -49,11 +49,25 @@ All settings prefixed with "INWARD" indicates a blue edge in the above diagram.
 of the red link in the above diagram. In the above, we have aliased the remote
 IP of each endpoint to "bridge" in our `/etc/hosts` file.
 
+### Encryption
+To provide end-to-end AES-128 symmetric-key encryption, you will need to 
+generate a key for use in the Fernet cryptography library. To do so, open a
+python3 shell and run the following:
+
+```
+from cryptography.fernet import Fernet
+file = open('bridge.key', 'wb')
+file.write(Fernet.generate_key())
+```
+
+Place the generated `bridge.key` file in the top-level `keys` directory.
+
 ## Running the application
 On each endpoint, run:
 
 ```
-sudo python3 incoming.py
+cd RMAC-bridge/src/
+sudo python3 -m RMACBridge
 ```
 
 Each endpoint will attempt to establish a connection with the other every five
