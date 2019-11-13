@@ -32,8 +32,7 @@ class InwardSocket:
 				print("Connection refused, retrying in 5s...")
 				time.sleep(5)
 		print("Connection to remote established!")
-		fil = "dst port " + str(self.port)
-		sniff(iface=INWARD_FACING_IFACE, filter=fil,
+		sniff(iface=INWARD_FACING_IFACE,
 			prn=lambda pkt: self.out_sock.send_over_bridge(sending_sock, pkt))
 
 
@@ -43,9 +42,9 @@ class InwardSocket:
 	def srp_packet(self, packet_bytes, iface):
 		decrypted = self.key.decrypt(packet_bytes)
 		packet = Ether(decrypted)
-		# Check not keepalive, would print loop infinitely without this
+		# This check makes sure to not forward local loopback heartbeat packets
 		if not packet[Ether].type == 0x9000:
 			print(RED + "PACKET RECIEVED, FORWARDING TO DCNET" + RESET)
 			packet.show()
-		# TEST ONLY UNCOMMENT LATER
+		# Uncomment the following line to actually send the packet to DCnet
 		# srp(packet, iface=iface)
