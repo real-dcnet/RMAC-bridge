@@ -72,6 +72,20 @@ sudo python3 -m RMACBridge
 
 Each endpoint will attempt to establish a connection with the other every five
 seconds. You can verify the connection works with 
-`echo -n "Hello World!" > /dev/udp/localhost/5552` (assuming that we're
-listening for DCnet packets on localhost:5552). You should see the packet
-appear at the other end.
+`echo -n "Hello World!" > /dev/udp/127.0.0.1/5552` (assuming that we're
+listening for DCnet packets on our interface bound with 127.0.0.1). The port 
+does not matter  for our testing purposes, since the bridge will sniff all
+packets on the  interface. You should see the packet appear at the other end.
+
+## Environment-specific notes
+Each pi has two interfaces: the built-in Ethernet jack and the USB-to-Ethernet
+adapter. The adapter is named `eth1` in in `ifconfig` and the native jack is 
+`eth0`. The native jack should lead to the Internet and the adapters should 
+lead to the data centers.
+
+For testing purposes, we currently aren't sending packets back into the DCnet
+network. To re-enable packet forwarding, uncomment line 50 of 
+`src/InwardSocket.py`:
+```
+# srp(packet, iface=iface)
+```
